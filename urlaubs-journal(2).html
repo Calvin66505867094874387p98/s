@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mein Urlaubs-Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Kalam:wght@400;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red: #E4202A;
+    --red-deep: #9E0F1C;
+    --blue-deep: #10213F;
+    --blue: #1F4E8C;
+    --ink: #0B0D12;
+    --paper: #F4EFDF;
+    --paper-dim: #E9E2CB;
+    --yellow: #FFC93C;
+    --venom: #6C3FA6;
+    --venom-deep: #4B2678;
+    --white: #FAF9F6;
+    --panel-border: 3px;
+    --radius: 4px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  body{
+    background:
+      linear-gradient(135deg, var(--red-deep) 0%, var(--red-deep) 32%, var(--blue-deep) 68%, var(--blue-deep) 100%);
+    color: var(--ink);
+    font-family: 'Kalam', cursive;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* ---------- Web background (large radiating web, spidey-sense burst) ---------- */
+  .web-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:.28;
+  }
+  .web-bg svg{width:100%;height:100%;}
+
+  /* ---------- Suit texture: fine web threads tiled across the whole page ---------- */
+  .suit-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:.5;
+    mix-blend-mode: overlay;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(4,6,10,.55) 0 1.5px, transparent 1.5px 34px),
+      repeating-linear-gradient(-45deg, rgba(4,6,10,.55) 0 1.5px, transparent 1.5px 34px);
+  }
+  .suit-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(4,6,10,.35) 1px, transparent 1.4px);
+    background-size: 17px 17px;
+    background-position: 8px 8px;
+  }
+
+  .halftone{
+    background-image: radial-gradient(var(--ink) 1.1px, transparent 1.1px);
+    background-size: 9px 9px;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:920px;
+    margin:0 auto;
+    padding: 0 18px 80px;
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative;
+    padding: 46px 18px 30px;
+    text-align:center;
+    color:var(--white);
+    overflow:hidden;
+  }
+  .hero-emblem{
+    position:absolute;
+    top:50%; left:50%;
+    width:min(420px, 90vw);
+    transform: translate(-50%,-52%);
+    opacity:.16;
+    z-index:0;
+    pointer-events:none;
+  }
+  .speed-lines{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:.35;
+    background: repeating-conic-gradient(from 0deg, var(--white) 0deg 1.1deg, transparent 1.1deg 9deg);
+    mask-image: radial-gradient(circle at 50% 40%, black 0%, black 18%, transparent 62%);
+    -webkit-mask-image: radial-gradient(circle at 50% 40%, black 0%, black 18%, transparent 62%);
+  }
+  header.hero > *{ position:relative; z-index:1; }
+  .hero-title{
+    font-family:'Bangers', cursive;
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    letter-spacing: 2px;
+    line-height:0.95;
+    margin:0;
+    color: var(--white);
+    -webkit-text-stroke: 2px var(--ink);
+    text-shadow:
+      4px 4px 0 var(--red),
+      4px 4px 0 var(--red),
+      7px 7px 0 var(--ink);
+    transform: rotate(-1.5deg);
+  }
+  .hero-title span{ color: var(--yellow); -webkit-text-stroke: 2px var(--ink); }
+  .hero-sub{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.82rem;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color: var(--yellow);
+    margin-top:14px;
+    opacity:.9;
+  }
+  .hero-tagline{
+    font-size:1.05rem;
+    max-width:520px;
+    margin: 12px auto 0;
+    color:var(--paper-dim);
+  }
+
+  .thwip{
+    display:inline-block;
+    font-family:'Bangers', cursive;
+    color:var(--red);
+    -webkit-text-stroke:1.5px var(--ink);
+    transform: rotate(6deg);
+    margin-left:6px;
+  }
+
+  /* ---------- Comic panel base ---------- */
+  .panel{
+    background: var(--paper);
+    border: var(--panel-border) solid var(--ink);
+    outline: 2px solid var(--red);
+    outline-offset: -8px;
+    border-radius: var(--radius);
+    box-shadow: 4px 4px 0 var(--red-deep), 8px 8px 0 var(--ink);
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:-3px; right:-3px; width:34px; height:34px;
+    background-image: radial-gradient(var(--red-deep) 1.6px, transparent 1.6px);
+    background-size: 7px 7px;
+    opacity:.45;
+    pointer-events:none;
+  }
+
+  /* ---------- Form panel ---------- */
+  #form-panel{
+    margin-top: 8px;
+    padding: 22px 22px 26px;
+  }
+  .panel-label{
+    font-family:'Bangers', cursive;
+    font-size:1.5rem;
+    letter-spacing:1px;
+    color:var(--red-deep);
+    margin:0 0 4px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel-label small{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.65rem;
+    color:var(--ink);
+    background:var(--yellow);
+    padding:2px 7px;
+    border:1.5px solid var(--ink);
+    border-radius:3px;
+    letter-spacing:.5px;
+  }
+
+  .row{ display:flex; gap:14px; flex-wrap:wrap; margin-top:14px;}
+  .field{ flex:1; min-width:180px; display:flex; flex-direction:column; gap:5px;}
+  .field label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--blue-deep);
+    font-weight:700;
+  }
+  input[type=date], input[type=text], textarea{
+    font-family:'Kalam', cursive;
+    font-size:1rem;
+    padding:9px 11px;
+    border:2px solid var(--ink);
+    border-radius:3px;
+    background:var(--white);
+    color:var(--ink);
+  }
+  input:focus, textarea:focus, button:focus-visible{
+    outline: 3px solid var(--blue);
+    outline-offset:1px;
+  }
+  textarea{resize:vertical; min-height:64px; font-family:'Kalam', cursive;}
+
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:18px;
+  }
+  @media (max-width:640px){ .split{grid-template-columns:1fr;} }
+
+  .stack-box{
+    border:2.5px dashed var(--ink);
+    border-radius:4px;
+    padding:12px;
+  }
+  .stack-box.hi{ background: rgba(255,201,60,.28); }
+  .stack-box.lo{ background: rgba(108,63,166,.14); }
+  .stack-title{
+    font-family:'Bangers', cursive;
+    letter-spacing:.5px;
+    font-size:1.05rem;
+    margin:0 0 8px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .stack-title.hi{ color:#8a5a00; }
+  .stack-title.lo{ color:var(--venom-deep); }
+
+  .add-row{ display:flex; gap:8px; }
+  .add-row input{ flex:1; }
+  .add-row button{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    border:2px solid var(--ink);
+    background:var(--white);
+    border-radius:3px;
+    padding:0 14px;
+    cursor:pointer;
+  }
+  .add-row button:hover{ background:var(--yellow); }
+
+  .chip-list{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:6px;}
+  .chip{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:8px;
+    background:var(--white);
+    border:1.5px solid var(--ink);
+    border-radius:3px;
+    padding:6px 9px;
+    font-size:.92rem;
+  }
+  .chip button{
+    border:none; background:transparent; cursor:pointer;
+    font-family:'JetBrains Mono', monospace;
+    color:var(--red-deep); font-weight:700; font-size:.9rem;
+    line-height:1;
+  }
+  .chip button:hover{ text-decoration:underline; }
+  .empty-chip{ font-family:'JetBrains Mono', monospace; font-size:.72rem; color:#8a8370; }
+
+  .form-actions{
+    margin-top:20px;
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  }
+  .btn-primary{
+    font-family:'Bangers', cursive;
+    font-size:1.15rem;
+    letter-spacing:1px;
+    color:var(--white);
+    background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
+    border:2.5px solid var(--ink);
+    border-radius:5px;
+    padding:11px 24px;
+    cursor:pointer;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: transform .12s ease, box-shadow .12s ease;
+    position:relative;
+    isolation:isolate;
+  }
+  .btn-primary::before{
+    content:"";
+    position:absolute;
+    inset:-14px;
+    z-index:-1;
+    background: repeating-conic-gradient(from 0deg, var(--white) 0deg .8deg, transparent .8deg 15deg);
+    border-radius:50%;
+    opacity:0;
+    transition: opacity .15s ease, transform .2s ease;
+    transform: scale(.6);
+  }
+  .btn-primary:hover::before{ opacity:.55; transform: scale(1); }
+  .btn-primary:hover{ transform: translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink); }
+  .btn-primary:active{ transform: translate(0,0); box-shadow:1px 1px 0 var(--ink); }
+  .btn-ghost{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.78rem;
+    background:transparent;
+    border:2px solid var(--ink);
+    border-radius:5px;
+    padding:9px 14px;
+    cursor:pointer;
+  }
+  .btn-ghost:hover{ background:var(--paper-dim); }
+  .form-msg{ font-family:'JetBrains Mono', monospace; font-size:.72rem; color:var(--venom-deep); }
+
+  /* ---------- Timeline ---------- */
+  #timeline{
+    margin-top: 44px;
+    position:relative;
+  }
+  .timeline-heading{
+    color: var(--white);
+    font-family:'Bangers', cursive;
+    font-size:1.7rem;
+    letter-spacing:1px;
+    text-align:center;
+    margin-bottom: 26px;
+  }
+  .timeline-heading .count{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.7rem;
+    color: var(--yellow);
+    display:block;
+    letter-spacing:1.5px;
+    margin-top:4px;
+  }
+
+  .web-line{
+    position:absolute;
+    left:24px;
+    top:6px;
+    bottom:6px;
+    width:4px;
+    background:
+      repeating-linear-gradient(var(--white) 0 5px, transparent 5px 9px) center/2px 100% no-repeat,
+      repeating-linear-gradient(90deg, transparent 0 45%, rgba(250,249,246,.35) 45% 55%, transparent 55% 100%) 0 0/100% 46px repeat-y;
+    opacity:.65;
+  }
+  @media (max-width:560px){ .web-line{ left:14px; } }
+
+  .day-card{
+    position:relative;
+    margin-left: 54px;
+    margin-bottom: 30px;
+    padding: 18px 20px 20px;
+    animation: swing-in .35s ease-out;
+  }
+  @media (max-width:560px){ .day-card{ margin-left:34px; } }
+
+  @keyframes swing-in{
+    from{ opacity:0; transform: translateX(-14px) rotate(-1deg); }
+    to{ opacity:1; transform: translateX(0) rotate(0); }
+  }
+
+  .day-node{
+    position:absolute;
+    left:-54px;
+    top:18px;
+    width:28px;height:28px;
+    background:
+      radial-gradient(circle at 50% 50%, var(--red) 0 34%, var(--red-deep) 34% 100%);
+    border:3px solid var(--ink);
+    border-radius:50%;
+    box-shadow:0 0 0 4px var(--blue-deep);
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 0 30%, var(--ink) 30% 32%, transparent 32%),
+      linear-gradient(0deg, transparent 48%, var(--ink) 48% 52%, transparent 52%),
+      linear-gradient(90deg, transparent 48%, var(--ink) 48% 52%, transparent 52%),
+      linear-gradient(45deg, transparent 48%, var(--ink) 48% 52%, transparent 52%),
+      linear-gradient(-45deg, transparent 48%, var(--ink) 48% 52%, transparent 52%),
+      radial-gradient(circle, var(--red) 0 100%);
+    background-blend-mode: normal;
+  }
+  @media (max-width:560px){ .day-node{ left:-34px; width:20px; height:20px; } }
+
+  .day-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;
+  }
+  .day-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--blue-deep);
+    font-weight:700;
+  }
+  .day-title{
+    font-family:'Bangers', cursive;
+    font-size:1.5rem;
+    color:var(--ink);
+    margin:2px 0 0;
+  }
+  .day-date{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    color:#5c563f;
+  }
+  .day-controls{ display:flex; gap:8px; }
+  .icon-btn{
+    border:1.5px solid var(--ink);
+    background:var(--white);
+    border-radius:3px;
+    width:30px;height:30px;
+    cursor:pointer;
+    font-size:.85rem;
+    line-height:1;
+  }
+  .icon-btn:hover{ background:var(--yellow); }
+  .icon-btn.danger:hover{ background: var(--red); color:var(--white); }
+
+  .day-body{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:640px){ .day-body{ grid-template-columns:1fr; } }
+
+  .burst-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px;}
+  .burst-list li{
+    font-size:.95rem;
+    padding:7px 10px;
+    border-radius:3px;
+    border:1.5px solid var(--ink);
+  }
+  .burst-list.hi li{ background: rgba(255,201,60,.35); }
+  .burst-list.lo li{ background: rgba(108,63,166,.14); }
+  .col-heading{
+    font-family:'Bangers', cursive;
+    font-size:.98rem;
+    margin:0 0 8px;
+    letter-spacing:.5px;
+  }
+  .col-heading.hi{ color:#8a5a00; }
+  .col-heading.lo{ color:var(--venom-deep); }
+
+  .day-notes{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:2px dashed var(--ink);
+    font-size:.95rem;
+    color:#33301f;
+    white-space:pre-wrap;
+  }
+
+  .empty-state{
+    margin-left:54px;
+    padding:26px 22px;
+    text-align:center;
+  }
+  @media (max-width:560px){ .empty-state{ margin-left:34px; } }
+  .empty-state p{ margin:6px 0 0; font-size:.95rem; color:#5c563f; }
+  .spider-mark{ font-size:1.8rem; display:block; }
+
+  footer{
+    text-align:center;
+    color: var(--paper-dim);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    letter-spacing:.5px;
+    margin-top:40px;
+    opacity:.75;
+  }
+
+  /* ---------- Game panel ---------- */
+  #game-panel{ margin-top:34px; padding:22px 22px 26px; }
+  .game-intro{ font-size:.95rem; color:#3a3623; margin:6px 0 0; }
+  .game-rules{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    color:#5c563f;
+    margin:8px 0 0;
+    line-height:1.6;
+  }
+  .game-stats-bar{
+    display:flex; gap:18px; flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:.82rem;
+    margin:16px 0 12px;
+    color:var(--blue-deep);
+  }
+  .game-stats-bar span{
+    background:var(--white);
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:5px 10px;
+  }
+  #game-lives.warn{ color:var(--red-deep); animation: pulse-warn .5s ease 2; }
+  @keyframes pulse-warn{ 50%{ transform:scale(1.12);} }
+
+  .game-field{
+    position:relative;
+    height:360px;
+    border:3px solid var(--ink);
+    border-radius:4px;
+    overflow:hidden;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 46px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 2px, transparent 2px 60px),
+      linear-gradient(180deg, #171b28 0%, #232840 55%, #2b1420 100%);
+    box-shadow: inset 0 0 0 3px var(--red-deep);
+    touch-action: manipulation;
+  }
+  .game-field.hit-flash{ animation: hit-flash .35s ease; }
+  @keyframes hit-flash{ 0%,100%{ box-shadow: inset 0 0 0 3px var(--red-deep);} 50%{ box-shadow: inset 0 0 0 8px var(--red);} }
+
+  .target{
+    position:absolute;
+    font-size:2.1rem;
+    line-height:1;
+    cursor:pointer;
+    user-select:none;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,.6));
+    transition: transform .08s ease;
+    will-change: top;
+  }
+  .target:hover{ transform: scale(1.18) rotate(-4deg); }
+  .target.popped{ animation: pop .28s ease forwards; pointer-events:none; }
+  @keyframes pop{ to{ transform: scale(1.7) rotate(12deg); opacity:0; } }
+
+  .web-splash{
+    position:absolute;
+    width:10px; height:10px;
+    border:3px solid var(--white);
+    border-radius:50%;
+    pointer-events:none;
+    transform: translate(-50%,-50%);
+    animation: splash .45s ease-out forwards;
+    z-index:5;
+  }
+  @keyframes splash{ to{ width:76px; height:76px; opacity:0; border-width:1px; } }
+
+  .float-text{
+    position:absolute;
+    font-family:'Bangers', cursive;
+    font-size:1.15rem;
+    letter-spacing:.5px;
+    pointer-events:none;
+    transform: translate(-50%,-50%);
+    animation: float-up .7s ease-out forwards;
+    z-index:6;
+  }
+  @keyframes float-up{ to{ transform: translate(-50%,-46px); opacity:0; } }
+
+  .game-overlay{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background: rgba(6,8,14,.72);
+    color: var(--white);
+    text-align:center;
+    padding:22px;
+  }
+  .game-overlay p{ font-family:'JetBrains Mono', monospace; font-size:.75rem; color:var(--yellow); margin:0; }
+  .game-overlay h3{ font-family:'Bangers', cursive; font-size:1.7rem; margin:0; -webkit-text-stroke:1.5px var(--ink); text-shadow:3px 3px 0 var(--red); }
+
+  .game-result{
+    margin-top:16px;
+    padding:16px 18px;
+    border:2.5px dashed var(--ink);
+    border-radius:4px;
+    background:var(--paper-dim);
+  }
+  .game-result h4{ font-family:'Bangers', cursive; font-size:1.35rem; margin:0 0 6px; color:var(--red-deep); }
+  .game-result p{ margin:4px 0; font-size:.92rem; }
+  .new-badge-flag{
+    display:inline-block;
+    background:var(--yellow);
+    border:1.5px solid var(--ink);
+    border-radius:3px;
+    padding:2px 8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.62rem;
+    margin-left:6px;
+    animation: pulse-warn 1s ease infinite;
+  }
+
+  .badges-heading{
+    font-family:'Bangers', cursive;
+    font-size:1.3rem;
+    color:var(--blue-deep);
+    margin:26px 0 4px;
+    letter-spacing:.5px;
+  }
+  .badge-gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(128px,1fr));
+    gap:12px;
+    margin-top:12px;
+  }
+  .badge-card{
+    border:2.5px solid var(--ink);
+    border-radius:5px;
+    padding:14px 8px 12px;
+    text-align:center;
+    background:var(--white);
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .badge-card.locked{ filter:grayscale(1); opacity:.55; }
+  .badge-emoji{ font-size:2rem; display:block; }
+  .badge-name{ font-family:'Bangers', cursive; font-size:.92rem; margin-top:5px; letter-spacing:.3px; }
+  .badge-hint{ font-family:'JetBrains Mono', monospace; font-size:.6rem; color:#5c563f; margin-top:3px; }
+
+  @media (max-width:560px){
+    .game-field{ height:320px; }
+    .target{ font-size:1.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .day-card{ animation:none; }
+    .btn-primary{ transition:none; }
+    .target, .web-splash, .float-text, .game-field.hit-flash, .new-badge-flag{ animation:none !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="suit-bg" aria-hidden="true"></div>
+<div class="web-bg" aria-hidden="true">
+  <svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+    <g stroke="#FAF9F6" stroke-width="1.2" fill="none">
+      <circle cx="400" cy="0" r="90"/><circle cx="400" cy="0" r="180"/><circle cx="400" cy="0" r="270"/>
+      <circle cx="400" cy="0" r="360"/><circle cx="400" cy="0" r="450"/><circle cx="400" cy="0" r="540"/>
+      <line x1="400" y1="0" x2="0" y2="500"/><line x1="400" y1="0" x2="120" y2="800"/>
+      <line x1="400" y1="0" x2="400" y2="800"/><line x1="400" y1="0" x2="680" y2="800"/>
+      <line x1="400" y1="0" x2="800" y2="500"/><line x1="400" y1="0" x2="800" y2="150"/>
+      <line x1="400" y1="0" x2="0" y2="150"/>
+    </g>
+  </svg>
+  <svg viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice" style="position:absolute; bottom:0; right:0; width:70%; height:70%; transform:rotate(180deg);">
+    <g stroke="#FAF9F6" stroke-width="1" fill="none" opacity=".8">
+      <circle cx="400" cy="0" r="70"/><circle cx="400" cy="0" r="140"/><circle cx="400" cy="0" r="210"/>
+      <circle cx="400" cy="0" r="280"/><circle cx="400" cy="0" r="350"/>
+      <line x1="400" y1="0" x2="80" y2="380"/><line x1="400" y1="0" x2="400" y2="600"/><line x1="400" y1="0" x2="720" y2="380"/>
+    </g>
+  </svg>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="speed-lines" aria-hidden="true"></div>
+    <svg class="hero-emblem" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="round">
+        <ellipse cx="100" cy="112" rx="20" ry="30" fill="#000" stroke="none"/>
+        <ellipse cx="100" cy="70" rx="13" ry="15" fill="#000" stroke="none"/>
+        <path d="M100 80 L60 40 M100 80 L34 66 M100 80 L26 96 M100 92 L18 120"/>
+        <path d="M100 80 L140 40 M100 80 L166 66 M100 80 L174 96 M100 92 L182 120"/>
+        <path d="M92 130 L60 165 M108 130 L140 165 M88 138 L54 150 M112 138 L146 150"/>
+      </g>
+    </svg>
+    <p class="hero-sub">🕸️ Ferienwoche &middot; Tag f&uuml;r Tag 🕸️</p>
+    <h1 class="hero-title">MEIN <span>URLAUBS</span>-JOURNAL<span class="thwip">!</span></h1>
+    <p class="hero-tagline">Jeden Abend ein neues Panel: Highlights, Lowlights &amp; Notizen &mdash; automatisch nach Datum sortiert.</p>
+  </header>
+
+  <section class="panel" id="form-panel">
+    <h2 class="panel-label" id="form-title">NEUER EINTRAG <small>Tagebuch-Modus</small></h2>
+
+    <form id="entry-form" novalidate>
+      <input type="hidden" id="entry-id">
+      <div class="row">
+        <div class="field">
+          <label for="entry-date">Datum</label>
+          <input type="date" id="entry-date" required>
+        </div>
+        <div class="field" style="flex:2;">
+          <label for="entry-title">Titel des Tages (optional)</label>
+          <input type="text" id="entry-title" placeholder="z. B. &bdquo;Tag am Strand&ldquo;" maxlength="60">
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="stack-box hi">
+          <h3 class="stack-title hi">✦ Highlights</h3>
+          <div class="add-row">
+            <input type="text" id="hi-input" placeholder="Was war heute gro&szlig;artig?" maxlength="120">
+            <button type="button" id="hi-add">+ Hinzuf&uuml;gen</button>
+          </div>
+          <ul class="chip-list" id="hi-list"></ul>
+        </div>
+
+        <div class="stack-box lo">
+          <h3 class="stack-title lo">⨯ Lowlights</h3>
+          <div class="add-row">
+            <input type="text" id="lo-input" placeholder="Was lief nicht so gut?" maxlength="120">
+            <button type="button" id="lo-add">+ Hinzuf&uuml;gen</button>
+          </div>
+          <ul class="chip-list" id="lo-list"></ul>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px;">
+        <div class="field">
+          <label for="entry-notes">Weitere Notizen (optional)</label>
+          <textarea id="entry-notes" maxlength="600" placeholder="Sonstige Gedanken zum Tag..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" id="submit-btn">Eintrag ins Netz weben</button>
+        <button type="button" class="btn-ghost" id="cancel-edit" hidden>Bearbeitung abbrechen</button>
+        <span class="form-msg" id="form-msg"></span>
+      </div>
+    </form>
+  </section>
+
+  <section id="timeline">
+    <h2 class="timeline-heading">DEINE FERIENWOCHE<span class="count" id="entry-count"></span></h2>
+    <div class="web-line" aria-hidden="true"></div>
+    <div id="entries-container"></div>
+  </section>
+
+  <section class="panel" id="game-panel">
+    <h2 class="panel-label">SPINNEN-CHALLENGE <small>Minispiel</small></h2>
+    <p class="game-intro">Verteidige die Stadt: Tippe Gauner an, bevor sie entkommen &mdash; sammle Punkte und schalte Abzeichen frei!</p>
+    <p class="game-rules">🦹 Gauner = +1 &nbsp;·&nbsp; 🥷 Ninja (schnell) = +2 &nbsp;·&nbsp; 💰 M&uuml;nze (selten) = +3 &nbsp;·&nbsp; 🙍 Zivilist bitte <strong>nicht</strong> antippen!</p>
+
+    <div class="game-stats-bar">
+      <span id="game-score">Punkte: 0</span>
+      <span id="game-time">Zeit: 45s</span>
+      <span id="game-lives">Leben: 🕸️🕸️🕸️</span>
+    </div>
+
+    <div id="game-field" class="game-field">
+      <div id="game-overlay" class="game-overlay">
+        <h3>SPIDER-CHALLENGE</h3>
+        <p id="game-highscore-label">Highscore: 0 Punkte</p>
+        <button type="button" class="btn-primary" id="game-start-btn">Los geht's &ndash; Netz werfen!</button>
+      </div>
+    </div>
+
+    <div id="game-result" class="game-result" hidden></div>
+
+    <h3 class="badges-heading">Deine Abzeichen-Sammlung</h3>
+    <div id="badge-gallery" class="badge-gallery"></div>
+  </section>
+
+  <footer>Eintr&auml;ge werden automatisch gespeichert und beim &Ouml;ffnen neu geladen.</footer>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'diary-entries';
+  let entries = [];
+  let highlightsTemp = [];
+  let lowlightsTemp = [];
+  let editingId = null;
+
+  const form = document.getElementById('entry-form');
+  const dateInput = document.getElementById('entry-date');
+  const titleInput = document.getElementById('entry-title');
+  const notesInput = document.getElementById('entry-notes');
+  const hiInput = document.getElementById('hi-input');
+  const loInput = document.getElementById('lo-input');
+  const hiList = document.getElementById('hi-list');
+  const loList = document.getElementById('lo-list');
+  const entriesContainer = document.getElementById('entries-container');
+  const entryCount = document.getElementById('entry-count');
+  const formMsg = document.getElementById('form-msg');
+  const formTitle = document.getElementById('form-title');
+  const submitBtn = document.getElementById('submit-btn');
+  const cancelBtn = document.getElementById('cancel-edit');
+  const idField = document.getElementById('entry-id');
+
+  const WEEKDAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+
+  function formatDate(iso){
+    if(!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    if(isNaN(d)) return iso;
+    const day = String(d.getDate()).padStart(2,'0');
+    const month = String(d.getMonth()+1).padStart(2,'0');
+    return WEEKDAYS[d.getDay()] + ', ' + day + '.' + month + '.' + d.getFullYear();
+  }
+
+  function uid(){
+    return 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+  }
+
+  async function loadEntries(){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      entries = res && res.value ? JSON.parse(res.value) : [];
+    }catch(e){
+      entries = [];
+    }
+    render();
+  }
+
+  async function saveEntries(){
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(entries), false);
+    }catch(e){
+      formMsg.textContent = 'Speichern fehlgeschlagen — bitte erneut versuchen.';
+    }
+  }
+
+  function renderChipList(listEl, arr, kind){
+    listEl.innerHTML = '';
+    if(arr.length === 0){
+      const li = document.createElement('li');
+      li.className = 'empty-chip';
+      li.textContent = kind === 'hi' ? 'Noch keine Highlights hinzugef\u00fcgt.' : 'Noch keine Lowlights hinzugef\u00fcgt.';
+      listEl.appendChild(li);
+      return;
+    }
+    arr.forEach((text, idx) => {
+      const li = document.createElement('li');
+      li.className = 'chip';
+      const span = document.createElement('span');
+      span.textContent = text;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = '✕';
+      btn.setAttribute('aria-label', 'Entfernen');
+      btn.addEventListener('click', () => {
+        arr.splice(idx,1);
+        renderChipList(listEl, arr, kind);
+      });
+      li.appendChild(span);
+      li.appendChild(btn);
+      listEl.appendChild(li);
+    });
+  }
+
+  function addChip(inputEl, arr, listEl, kind){
+    const val = inputEl.value.trim();
+    if(!val) return;
+    arr.push(val);
+    inputEl.value = '';
+    inputEl.focus();
+    renderChipList(listEl, arr, kind);
+  }
+
+  document.getElementById('hi-add').addEventListener('click', () => addChip(hiInput, highlightsTemp, hiList, 'hi'));
+  document.getElementById('lo-add').addEventListener('click', () => addChip(loInput, lowlightsTemp, loList, 'lo'));
+  hiInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addChip(hiInput, highlightsTemp, hiList, 'hi'); }});
+  loInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addChip(loInput, lowlightsTemp, loList, 'lo'); }});
+
+  function resetForm(){
+    form.reset();
+    highlightsTemp = [];
+    lowlightsTemp = [];
+    renderChipList(hiList, highlightsTemp, 'hi');
+    renderChipList(loList, lowlightsTemp, 'lo');
+    editingId = null;
+    idField.value = '';
+    formTitle.innerHTML = 'NEUER EINTRAG <small>Tagebuch-Modus</small>';
+    submitBtn.textContent = 'Eintrag ins Netz weben';
+    cancelBtn.hidden = true;
+    formMsg.textContent = '';
+  }
+
+  cancelBtn.addEventListener('click', resetForm);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formMsg.textContent = '';
+
+    const date = dateInput.value;
+    if(!date){
+      formMsg.textContent = 'Bitte ein Datum ausw\u00e4hlen.';
+      return;
+    }
+    if(highlightsTemp.length === 0 && lowlightsTemp.length === 0 && !notesInput.value.trim()){
+      formMsg.textContent = 'F\u00fcge mindestens ein Highlight, Lowlight oder eine Notiz hinzu.';
+      return;
+    }
+
+    const entry = {
+      id: editingId || uid(),
+      date: date,
+      title: titleInput.value.trim(),
+      highlights: [...highlightsTemp],
+      lowlights: [...lowlightsTemp],
+      notes: notesInput.value.trim()
+    };
+
+    if(editingId){
+      const idx = entries.findIndex(en => en.id === editingId);
+      if(idx > -1) entries[idx] = entry;
+    } else {
+      entries.push(entry);
+    }
+
+    await saveEntries();
+    resetForm();
+    render();
+  });
+
+  function startEdit(id){
+    const entry = entries.find(en => en.id === id);
+    if(!entry) return;
+    editingId = id;
+    idField.value = id;
+    dateInput.value = entry.date;
+    titleInput.value = entry.title || '';
+    notesInput.value = entry.notes || '';
+    highlightsTemp = [...entry.highlights];
+    lowlightsTemp = [...entry.lowlights];
+    renderChipList(hiList, highlightsTemp, 'hi');
+    renderChipList(loList, lowlightsTemp, 'lo');
+    formTitle.innerHTML = 'EINTRAG BEARBEITEN <small>Tag: ' + formatDate(entry.date) + '</small>';
+    submitBtn.textContent = '\u00c4nderungen speichern';
+    cancelBtn.hidden = false;
+    document.getElementById('form-panel').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  async function deleteEntry(id){
+    entries = entries.filter(en => en.id !== id);
+    await saveEntries();
+    if(editingId === id) resetForm();
+    render();
+  }
+
+  function render(){
+    renderChipList(hiList, highlightsTemp, 'hi');
+    renderChipList(loList, lowlightsTemp, 'lo');
+
+    const sorted = [...entries].sort((a,b) => a.date.localeCompare(b.date));
+
+    entryCount.textContent = sorted.length === 0
+      ? 'NOCH KEINE EINTR\u00c4GE'
+      : sorted.length + (sorted.length === 1 ? ' EINTRAG' : ' EINTR\u00c4GE') + ' \u00b7 AUTOMATISCH SORTIERT';
+
+    entriesContainer.innerHTML = '';
+
+    if(sorted.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'panel empty-state';
+      empty.innerHTML = '<span class="spider-mark">\uD83D\uDD78\uFE0F</span><p>Noch h\u00e4ngt hier kein Netz. Trag oben deinen ersten Tag ein!</p>';
+      entriesContainer.appendChild(empty);
+      return;
+    }
+
+    sorted.forEach((entry, i) => {
+      const card = document.createElement('article');
+      card.className = 'panel day-card';
+
+      const node = document.createElement('div');
+      node.className = 'day-node';
+      card.appendChild(node);
+
+      const head = document.createElement('div');
+      head.className = 'day-head';
+      head.innerHTML = `
+        <div>
+          <div class="day-tag">TAG ${i+1}</div>
+          <h3 class="day-title">${escapeHtml(entry.title) || 'Ohne Titel'}</h3>
+          <div class="day-date">${formatDate(entry.date)}</div>
+        </div>
+      `;
+      const controls = document.createElement('div');
+      controls.className = 'day-controls';
+      const editBtn = document.createElement('button');
+      editBtn.className = 'icon-btn';
+      editBtn.type = 'button';
+      editBtn.textContent = '\u270E';
+      editBtn.setAttribute('aria-label', 'Eintrag bearbeiten');
+      editBtn.addEventListener('click', () => startEdit(entry.id));
+      const delBtn = document.createElement('button');
+      delBtn.className = 'icon-btn danger';
+      delBtn.type = 'button';
+      delBtn.textContent = '\uD83D\uDDD1';
+      delBtn.setAttribute('aria-label', 'Eintrag l\u00f6schen');
+      delBtn.addEventListener('click', () => {
+        if(confirm('Diesen Eintrag wirklich l\u00f6schen?')) deleteEntry(entry.id);
+      });
+      controls.appendChild(editBtn);
+      controls.appendChild(delBtn);
+      head.appendChild(controls);
+      card.appendChild(head);
+
+      const body = document.createElement('div');
+      body.className = 'day-body';
+
+      const hiCol = document.createElement('div');
+      hiCol.innerHTML = '<h4 class="col-heading hi">✦ Highlights</h4>';
+      const hiUl = document.createElement('ul');
+      hiUl.className = 'burst-list hi';
+      if(entry.highlights.length === 0){
+        hiUl.innerHTML = '<li style="border-style:dashed;opacity:.6;">Keine erfasst</li>';
+      } else {
+        entry.highlights.forEach(h => {
+          const li = document.createElement('li');
+          li.textContent = h;
+          hiUl.appendChild(li);
+        });
+      }
+      hiCol.appendChild(hiUl);
+
+      const loCol = document.createElement('div');
+      loCol.innerHTML = '<h4 class="col-heading lo">⨯ Lowlights</h4>';
+      const loUl = document.createElement('ul');
+      loUl.className = 'burst-list lo';
+      if(entry.lowlights.length === 0){
+        loUl.innerHTML = '<li style="border-style:dashed;opacity:.6;">Keine erfasst</li>';
+      } else {
+        entry.lowlights.forEach(l => {
+          const li = document.createElement('li');
+          li.textContent = l;
+          loUl.appendChild(li);
+        });
+      }
+      loCol.appendChild(loUl);
+
+      body.appendChild(hiCol);
+      body.appendChild(loCol);
+      card.appendChild(body);
+
+      if(entry.notes){
+        const notes = document.createElement('div');
+        notes.className = 'day-notes';
+        notes.textContent = entry.notes;
+        card.appendChild(notes);
+      }
+
+      entriesContainer.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  // default date = today
+  dateInput.valueAsDate = new Date();
+
+  loadEntries();
+})();
+</script>
+
+<script>
+(function(){
+  const GAME_KEY = 'game-progress';
+  const ROUND_SECONDS = 45;
+
+  const BADGES = [
+    { id:'bronze', threshold:10, emoji:'🥉', name:'Bronze-Netz' },
+    { id:'silber', threshold:25, emoji:'🥈', name:'Silber-Netz' },
+    { id:'gold',   threshold:50, emoji:'🥇', name:'Gold-Netz' },
+    { id:'legende',threshold:80, emoji:'🕸️👑', name:'Legende von New York' }
+  ];
+
+  const scoreEl = document.getElementById('game-score');
+  const timeEl = document.getElementById('game-time');
+  const livesEl = document.getElementById('game-lives');
+  const field = document.getElementById('game-field');
+  const overlay = document.getElementById('game-overlay');
+  const startBtn = document.getElementById('game-start-btn');
+  const highscoreLabel = document.getElementById('game-highscore-label');
+  const resultBox = document.getElementById('game-result');
+  const galleryEl = document.getElementById('badge-gallery');
+
+  let progress = { highScore:0, unlocked:[] };
+  let targetIdCounter = 0;
+
+  let state = {
+    running:false,
+    score:0,
+    lives:3,
+    timeLeft:ROUND_SECONDS,
+    targets:new Map(),
+    rafId:null,
+    lastFrame:0,
+    spawnTimeout:null,
+    countdownInterval:null
+  };
+
+  async function loadProgress(){
+    try{
+      const res = await window.storage.get(GAME_KEY, false);
+      progress = res && res.value ? JSON.parse(res.value) : { highScore:0, unlocked:[] };
+    }catch(e){
+      progress = { highScore:0, unlocked:[] };
+    }
+    highscoreLabel.textContent = 'Highscore: ' + progress.highScore + ' Punkte';
+    renderGallery();
+  }
+
+  async function saveProgress(){
+    try{
+      await window.storage.set(GAME_KEY, JSON.stringify(progress), false);
+    }catch(e){ /* best effort */ }
+  }
+
+  function renderGallery(){
+    galleryEl.innerHTML = '';
+    BADGES.forEach(b => {
+      const unlocked = progress.unlocked.includes(b.id);
+      const card = document.createElement('div');
+      card.className = 'badge-card' + (unlocked ? '' : ' locked');
+      card.innerHTML = `
+        <span class="badge-emoji">${unlocked ? b.emoji : '❓'}</span>
+        <div class="badge-name">${unlocked ? b.name : '???'}</div>
+        <div class="badge-hint">${unlocked ? 'Freigeschaltet' : 'Ab ' + b.threshold + ' Punkten'}</div>
+      `;
+      galleryEl.appendChild(card);
+    });
+  }
+
+  function pickType(){
+    const villain  = { key:'villain',  emoji:'🦹', points:1, speed:70,  hazard:false };
+    const ninja    = { key:'ninja',    emoji:'🥷', points:2, speed:105, hazard:false };
+    const coin     = { key:'coin',     emoji:'💰', points:3, speed:52,  hazard:false };
+    const civilian = { key:'civilian', emoji:'🙍', points:0, speed:62,  hazard:true  };
+    const roll = Math.random();
+    if(roll < 0.14) return civilian;
+    if(roll < 0.20) return coin;
+    if(roll < 0.46) return ninja;
+    return villain;
+  }
+
+  function updateScoreDisplay(){ scoreEl.textContent = 'Punkte: ' + state.score; }
+  function updateTimeDisplay(){ timeEl.textContent = 'Zeit: ' + state.timeLeft + 's'; }
+  function updateLivesDisplay(){
+    livesEl.textContent = 'Leben: ' + '🕸️'.repeat(Math.max(state.lives,0)) + (state.lives<=0 ? '—' : '');
+  }
+
+  function flashField(){
+    field.classList.remove('hit-flash');
+    void field.offsetWidth;
+    field.classList.add('hit-flash');
+  }
+
+  function spawnSplash(x, y){
+    const s = document.createElement('div');
+    s.className = 'web-splash';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    field.appendChild(s);
+    setTimeout(() => s.remove(), 450);
+  }
+
+  function spawnFloatText(x, y, text, color){
+    const t = document.createElement('div');
+    t.className = 'float-text';
+    t.textContent = text;
+    t.style.left = x + 'px';
+    t.style.top = y + 'px';
+    t.style.color = color;
+    t.style.webkitTextStroke = '1px #0B0D12';
+    field.appendChild(t);
+    setTimeout(() => t.remove(), 700);
+  }
+
+  function loseLife(){
+    state.lives--;
+    updateLivesDisplay();
+    flashField();
+    if(state.lives <= 0){
+      endGame();
+    }
+  }
+
+  function handleTargetClick(id, ev){
+    const t = state.targets.get(id);
+    if(!t) return;
+    state.targets.delete(id);
+    const rect = field.getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const y = ev.clientY - rect.top;
+    spawnSplash(x, y);
+
+    if(t.type.hazard){
+      spawnFloatText(x, y, 'Autsch!', '#E4202A');
+      t.el.classList.add('popped');
+      loseLife();
+    } else {
+      state.score += t.type.points;
+      updateScoreDisplay();
+      spawnFloatText(x, y, '+' + t.type.points, '#FFC93C');
+      t.el.classList.add('popped');
+    }
+    setTimeout(() => t.el.remove(), 260);
+  }
+
+  function spawnTarget(){
+    if(!state.running) return;
+    const type = pickType();
+    const el = document.createElement('div');
+    el.className = 'target';
+    el.textContent = type.emoji;
+    const fw = field.clientWidth;
+    const leftPx = Math.max(6, Math.random() * Math.max(fw - 46, 10));
+    el.style.left = leftPx + 'px';
+    el.style.top = '-44px';
+    field.appendChild(el);
+
+    const elapsed = ROUND_SECONDS - state.timeLeft;
+    const speed = type.speed + elapsed * 1.3 + Math.random() * 18;
+    const id = 't' + (targetIdCounter++);
+    state.targets.set(id, { el, top:-44, speed, type });
+    el.addEventListener('click', (ev) => handleTargetClick(id, ev));
+    el.addEventListener('touchstart', (ev) => { ev.preventDefault(); handleTargetClick(id, ev.touches[0] || ev); }, { passive:false });
+  }
+
+  function scheduleSpawn(){
+    if(!state.running) return;
+    spawnTarget();
+    const elapsed = ROUND_SECONDS - state.timeLeft;
+    const interval = Math.max(420, 1150 - elapsed * 16);
+    state.spawnTimeout = setTimeout(scheduleSpawn, interval);
+  }
+
+  function loop(ts){
+    if(!state.running) return;
+    const dt = (ts - state.lastFrame) / 1000 || 0;
+    state.lastFrame = ts;
+    const bound = field.clientHeight;
+    for(const [id, t] of state.targets){
+      t.top += t.speed * dt;
+      t.el.style.top = t.top + 'px';
+      if(t.top > bound){
+        state.targets.delete(id);
+        t.el.remove();
+        if(!t.type.hazard){ loseLife(); }
+      }
+    }
+    if(state.running) state.rafId = requestAnimationFrame(loop);
+  }
+
+  function clearField(){
+    for(const [, t] of state.targets){ t.el.remove(); }
+    state.targets.clear();
+    field.querySelectorAll('.web-splash, .float-text').forEach(n => n.remove());
+  }
+
+  function startGame(){
+    clearField();
+    state.running = true;
+    state.score = 0;
+    state.lives = 3;
+    state.timeLeft = ROUND_SECONDS;
+    updateScoreDisplay();
+    updateLivesDisplay();
+    updateTimeDisplay();
+    overlay.style.display = 'none';
+    resultBox.hidden = true;
+
+    state.lastFrame = performance.now();
+    state.rafId = requestAnimationFrame(loop);
+    scheduleSpawn();
+    state.countdownInterval = setInterval(() => {
+      state.timeLeft--;
+      updateTimeDisplay();
+      if(state.timeLeft <= 0) endGame();
+    }, 1000);
+  }
+
+  async function endGame(){
+    if(!state.running) return;
+    state.running = false;
+    clearInterval(state.countdownInterval);
+    clearTimeout(state.spawnTimeout);
+    cancelAnimationFrame(state.rafId);
+    clearField();
+
+    const finalScore = state.score;
+    const newlyUnlocked = [];
+    BADGES.forEach(b => {
+      if(finalScore >= b.threshold && !progress.unlocked.includes(b.id)){
+        progress.unlocked.push(b.id);
+        newlyUnlocked.push(b);
+      }
+    });
+    const isNewHighscore = finalScore > progress.highScore;
+    if(isNewHighscore) progress.highScore = finalScore;
+    await saveProgress();
+    renderGallery();
+    highscoreLabel.textContent = 'Highscore: ' + progress.highScore + ' Punkte';
+
+    let html = `<h4>Runde beendet!</h4><p>Du hast <strong>${finalScore} Punkte</strong> erzielt.${isNewHighscore ? ' <span class="new-badge-flag">NEUER HIGHSCORE!</span>' : ''}</p>`;
+    if(newlyUnlocked.length){
+      html += '<p>Neu freigeschaltet: ' + newlyUnlocked.map(b => b.emoji + ' ' + b.name + '<span class="new-badge-flag">NEU</span>').join(' &nbsp; ') + '</p>';
+    } else {
+      const next = BADGES.find(b => !progress.unlocked.includes(b.id));
+      html += next ? `<p>N&auml;chstes Abzeichen: ${next.emoji} ${next.name} ab ${next.threshold} Punkten.</p>` : '<p>Alle Abzeichen freigeschaltet &mdash; du bist die Legende von New York! 🕸️</p>';
+    }
+    resultBox.innerHTML = html;
+    resultBox.hidden = false;
+
+    overlay.querySelector('h3').textContent = 'RUNDE VORBEI';
+    startBtn.textContent = 'Nochmal spielen';
+    overlay.style.display = 'flex';
+  }
+
+  startBtn.addEventListener('click', startGame);
+
+  loadProgress();
+})();
+</script>
+
+</body>
+</html>
